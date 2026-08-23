@@ -1,0 +1,13 @@
+tracker_type: bytetrack        # Kullanılacak takip algoritması
+
+track_high_thresh: 0.15       # Güçlü tespit olarak kabul edilecek minimum confidence değeri
+
+track_low_thresh: 0.01         # Takip sırasında değerlendirilecek düşük confidence sınırı
+
+new_track_thresh: 0.35         # Yeni bir Track ID oluşturmak için gereken minimum confidence
+
+track_buffer: 90               # Araç kaybolduğunda kaç frame boyunca takip bilgisinin korunacağı
+
+match_thresh: 0.95             # Mevcut track ile yeni detection eşleşme eşiği
+
+fuse_score: True               # Eşleştirme sırasında detection confidence skorunu da kullanır

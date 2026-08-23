@@ -1,0 +1,57 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Generated vector stores / model artifacts
+faiss_index/
+*.faiss
+*.pkl
+*.pt
+*.onnx
+*.engine
+*.h5
+*.keras
+
+# Large media / generated outputs
+*.mp4
+*.avi
+*.mov
+*.mkv
+outputs/*
+!outputs/.gitkeep
+**/outputs/*
+!**/outputs/.gitkeep
+
+# Day 2 frame sequence (large; add your own local data)
+day-02-computer-vision/data/video_sequence/*
+!day-02-computer-vision/data/video_sequence/.gitkeep
+!day-02-computer-vision/data/video_sequence/README.md
+
+# Practice videos (large; add your own local data)
+practice/yolo/data/*
+!practice/yolo/data/.gitkeep
+!practice/yolo/data/README.md
+
+# Local classification datasets
+day-02-computer-vision/data/Dataset/
