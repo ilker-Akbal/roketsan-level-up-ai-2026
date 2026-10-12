@@ -41,6 +41,7 @@ def main():
     parser.add_argument("dataset", type=Path)
     parser.add_argument("--k", type=int, default=3)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--html", type=Path, help="Write a standalone HTML report")
     args = parser.parse_args()
     try:
         report = evaluate(json.loads(args.dataset.read_text(encoding="utf-8")), args.k)
@@ -49,6 +50,9 @@ def main():
     rendered = json.dumps(report, indent=2, ensure_ascii=False)
     if args.output:
         args.output.write_text(rendered + "\n", encoding="utf-8")
+    if args.html:
+        from .html_report import render_html
+        args.html.write_text(render_html(report), encoding="utf-8")
     print(rendered)
 
 if __name__ == "__main__":
