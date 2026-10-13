@@ -83,15 +83,26 @@ report = run_retriever(
 print(report["metrics"])
 ```
 
-This protocol can wrap FAISS, BM25, vector databases or another retriever
-without installing those services into the evaluation core. Live FAISS, Ollama
-and multilingual datasets are **planned**, not implemented.
+This protocol can wrap FAISS, BM25 or a vector database without changing the
+evaluation core. An **optional FAISS adapter** is included:
+
+```bash
+pip install numpy faiss-cpu
+python examples/faiss_integration.py
+```
+
+The example uses illustrative *handmade* vectors, not learned embeddings.
+For a real vector index, the caller must supply matching document IDs and an
+embedding function; model downloads and index ownership remain external.
+Ollama, direct answer-grounding evaluation and multilingual labeled benchmarks
+remain planned, not implemented.
 
 ## Limitations and provenance
 
-The included examples are **synthetic test fixtures** and are not evidence of
+The bundled examples are **synthetic test fixtures** and are not evidence of
 benchmark superiority, accuracy in deployed systems, or project adoption.
 Datasets must have documented licenses and annotation methodology before
 publishing comparative claims. No API credentials or network services are
-required by the evaluation core. See [roadmap](docs/OPEN_SOURCE_ROADMAP.md)
+required by the evaluation core. See the [roadmap](docs/OPEN_SOURCE_ROADMAP.md),
+[provenance policy](docs/PROVENANCE.md), [security policy](SECURITY_OPENRAG.md)
 and [contribution guide](CONTRIBUTING_OPENRAG.md).
