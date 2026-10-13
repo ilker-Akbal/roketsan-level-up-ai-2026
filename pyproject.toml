@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openrag-bench"
+version = "0.1.0"
+description = "Dependency-free retrieval evaluation toolkit for RAG pipelines"
+readme = "OPENRAG_BENCH.md"
+requires-python = ">=3.10"
+license = {text = "License pending review"}
+authors = [{name = "Ilker Akbal"}]
+keywords = ["rag", "retrieval", "evaluation", "benchmark"]
+classifiers = ["Programming Language :: Python :: 3", "Operating System :: OS Independent"]
+
+[project.scripts]
+openrag-bench = "openrag_bench.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["openrag_bench*"]
