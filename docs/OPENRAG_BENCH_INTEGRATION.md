@@ -83,6 +83,37 @@ The full captured `baseline.json`/`candidate.json` include question text
 and ranked chunk IDs and remain **local**. Do not upload private RAG
 captured datasets to issues, public CI artifacts, or releases.
 
+## Observed first real-model CI result — 15 October 2026
+
+The **first successful public real-model run** is
+[GitHub Actions #38748230159](https://github.com/ilker-Akbal/roketsan-level-up-ai-2026/actions/runs/38748230159).
+Its actual job output reports:
+
+| Observed metric | Value |
+| --- | ---: |
+| Source documents | 6 synthetic snippets |
+| Author-labeled questions | 6 |
+| Evaluation cutoff | 3 |
+| Baseline NDCG@3 (minimum cosine 0.35) | 1.0000 |
+| Candidate NDCG@3 (minimum cosine 0.20) | 1.0000 |
+| Candidate minus baseline | 0.0000 |
+| Guard result | PASSED |
+
+These are genuinely computed rankings from an installed embedding model and
+FAISS, **but on an extremely small/easy synthetic fixture**. No performance
+gain is observed, and the perfect score must not be generalized to realistic
+corpora or independent adoption. The linked job confirms execution of the
+published OpenRAG Bench v0.6.0 wheel. Its
+[aggregate/redacted artifact](https://github.com/ilker-Akbal/roketsan-level-up-ai-2026/actions/runs/38748230159/artifacts/11979148123)
+is retained for 14 days.
+
+The workflow also exercises a separate **intentionally invalid** candidate
+configuration with a cosine threshold of **1.01** (above the attainable
+maximum). This must return zero candidate hits, a negative measured NDCG
+delta, and Guard exit code **2**. It is a defensive failure test, **not**
+evidence that ordinary tuning produced an observed production regression.
+The negative test result will only be called verified when its workflow passes.
+
 ## GitHub Actions evidence
 
 The path-scoped workflow
@@ -95,8 +126,9 @@ model, creates the FAISS index, calls OpenRAG Bench v0.6.0 from its
 observed rankings and checks Guard exit behavior.
 
 When successfully run, the public workflow's job log and short-lived
-artifact `openrag-faiss-firstparty-summary` provide independently
-inspectable **CI execution evidence for our own integration**.
+artifacts `openrag-faiss-firstparty-summary` and
+`openrag-faiss-intentional-guard-block` provide inspectable **CI execution
+ evidence for our own integration and its deliberate negative test**.
 The artifact includes **only aggregate summary and redacted Guard reports**;
 raw query texts, complete captured rows, corpus documents, model weights
 and observed raw ranking files are excluded.
