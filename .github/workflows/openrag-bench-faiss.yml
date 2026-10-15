@@ -63,6 +63,37 @@ jobs:
           assert (folder / "guard.html").is_file()
           print("Real model and FAISS produced observed rankings; release guard passed.")
           PY
+      - name: Deliberately overrestrict actual retrieval and verify Guard rejects it
+        run: |
+          set +e
+          python practice/llm/local-rag/openrag_bench_eval.py --output-dir reports/gha-openrag-blocked --candidate-min-score 1.01
+          result=$?
+          set -e
+          test "$result" -eq 2
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("reports/gha-openrag-blocked")
+          summary = json.loads((root / "summary.json").read_text())
+          candidate = json.loads((root / "candidate-observed.json").read_text())
+          assert summary["replay_exit_code"] == 2
+          assert summary["guard_passed"] is False
+          assert summary["delta_ndcg_at_k"] < 0
+          assert "critical-navigation-no-regression" in summary["failed_rules"]
+          assert all(not row["retrieved_ids"] for row in candidate)
+          assert (root / "guard.html").is_file()
+          print("Real FAISS produced no hits under impossible >1.0 cosine cutoff; Guard BLOCKED.")
+          PY
+      - name: Upload synthetic negative-case redacted report
+        uses: actions/upload-artifact@v4
+        with:
+          name: openrag-faiss-intentional-guard-block
+          path: |
+            reports/gha-openrag-blocked/summary.json
+            reports/gha-openrag-blocked/guard.json
+            reports/gha-openrag-blocked/guard.html
+          retention-days: 14
+          if-no-files-found: error
       - name: Upload redacted guard report and aggregate-only measurements
         uses: actions/upload-artifact@v4
         with:
