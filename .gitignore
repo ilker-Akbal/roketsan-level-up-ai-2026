@@ -55,3 +55,6 @@ practice/yolo/data/*
 
 # Local classification datasets
 day-02-computer-vision/data/Dataset/
+
+# Local OpenRAG Bench evaluation evidence (contains questions and chunk IDs)
+/reports/

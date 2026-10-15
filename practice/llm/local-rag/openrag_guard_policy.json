@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "macro-ndcg-nonregression",
+      "select": {"type": "all"},
+      "metric": "ndcg_at_k",
+      "min_delta": 0
+    },
+    {
+      "id": "critical-navigation-no-regression",
+      "select": {"type": "critical"},
+      "metric": "hit_at_k",
+      "max_regressed_queries": 0
+    }
+  ]
+}

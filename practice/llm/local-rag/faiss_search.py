@@ -1,125 +1,26 @@
-from ollama import chat
-from sentence_transformers import SentenceTransformer
-import faiss
-import numpy as np
+"""Interactive local RAG example using the shared Sentence Transformers + FAISS retriever.
 
-
-documents = [
-    {
-        "text": "The radar detects airborne targets.",
-        "document": "radar_manual.pdf",
-        "page": 12,
-        "chunk_id": "chunk_01"
-    },
-    {
-        "text": "The battery supplies 24 V DC power.",
-        "document": "power_system.pdf",
-        "page": 7,
-        "chunk_id": "chunk_02"
-    },
-    {
-        "text": "GNSS provides vehicle position information.",
-        "document": "navigation_manual.pdf",
-        "page": 18,
-        "chunk_id": "chunk_03"
-    },
-    {
-        "text": "The camera detects pedestrians.",
-        "document": "camera_manual.pdf",
-        "page": 25,
-        "chunk_id": "chunk_04"
-    },
-    {
-        "text": "IMU measures acceleration and angular velocity.",
-        "document": "navigation_manual.pdf",
-        "page": 19,
-        "chunk_id": "chunk_05"
-    },
-    {
-        "text": "Ethernet is used to transmit telemetry data.",
-        "document": "communication_manual.pdf",
-        "page": 31,
-        "chunk_id": "chunk_06"
-    }
-]
-
-
-model = SentenceTransformer(
-    "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-)
-
-
-# Document embeddings
-texts = [doc["text"] for doc in documents]
-
-document_embeddings = model.encode(texts)
-
-document_embeddings = np.asarray(
-    document_embeddings,
-    dtype="float32"
-)
-
-faiss.normalize_L2(document_embeddings)
-
-
-# FAISS index
-dimension = document_embeddings.shape[1]
-
-index = faiss.IndexFlatIP(dimension)
-
-index.add(document_embeddings)
-
-
-def retrieve(query, top_k=3, min_score=0.35):
-
-    query_embedding = model.encode([query])
-
-    query_embedding = np.asarray(
-        query_embedding,
-        dtype="float32"
-    )
-
-    faiss.normalize_L2(query_embedding)
-
-    scores, indices = index.search(
-        query_embedding,
-        top_k
-    )
-
-    results = []
-
-    for score, idx in zip(scores[0], indices[0]):
-        
-        if score < min_score:
-            continue
-
-        result = documents[idx].copy()
-
-        result["score"] = float(score)
-
-        results.append(result)
-
-    return results
+The retrieval core is reusable independently from Ollama for offline evaluation:
+see openrag_bench_eval.py. Running THIS script still requires a local Ollama model.
+"""
+from retrieval_core import build_retriever
 
 
 def build_context(results):
-    context_parts = []
-    for i, result in enumerate(results, start=1):
-        source = (
-            f"[SOURCE {i}]\n"
+    parts = []
+    for position, result in enumerate(results, start=1):
+        parts.append(
+            f"[SOURCE {position}]\n"
             f"Document: {result['document']}\n"
             f"Page: {result['page']}\n"
             f"Chunk: {result['chunk_id']}\n"
             f"Text: {result['text']}"
         )
-        context_parts.append(source)
-    return "\n\n".join(context_parts) 
+    return "\n\n".join(parts)
 
 
 def build_prompt(query, context):
-
-    prompt = f"""
-You are a technical document assistant.
+    return f"""You are a technical document assistant.
 
 TASK:
 Answer the user's question using only the provided context.
@@ -142,56 +43,35 @@ USER QUESTION:
 ANSWER:
 """
 
-    return prompt
 
 def generate_answer(prompt):
+    from ollama import chat
 
     response = chat(
         model="qwen3:4b-instruct-2507-q4_K_M",
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        options={
-            "temperature": 0.1
-        }
+        messages=[{"role": "user", "content": prompt}],
+        options={"temperature": 0.1},
     )
-
     return response.message.content
-query = "Sistem aracın nerede olduğunu nasıl biliyor?"
 
-results = retrieve(
-    query,
-    top_k=3,
-    min_score=0.35
-)
 
-if not results:
-    answer = "not_found"
+def main():
+    query = "Sistem aracın nerede olduğunu nasıl biliyor?"
+    retriever = build_retriever()
+    results = retriever.retrieve(query, top_k=3, min_score=0.35)
 
-else:
-    context = build_context(results)
-    prompt = build_prompt(query, context)
-    answer = generate_answer(prompt)
+    if results:
+        answer = generate_answer(build_prompt(query, build_context(results)))
+    else:
+        answer = "not_found"
 
-context = build_context(results)
+    print("\nQUESTION:\n", query)
+    print("\nRETRIEVAL RESULTS:")
+    for result in results:
+        print(f"{result['score']:.4f} -> {result['text']}")
+    print("\nANSWER:\n", answer)
+    return 0
 
-prompt = build_prompt(query, context)
 
-answer = generate_answer(prompt)
-
-print("\nQUESTION:")
-print(query)
-
-print("\nRETRIEVAL RESULTS:")
-
-for result in results:
-    print(
-        f"{result['score']:.4f} -> "
-        f"{result['text']}"
-    )
-
-print("\nANSWER:")
-print(answer)
+if __name__ == "__main__":
+    raise SystemExit(main())

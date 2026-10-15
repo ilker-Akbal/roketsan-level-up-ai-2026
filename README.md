@@ -164,6 +164,27 @@ pip install -r requirements/practice-llm.txt
 
 The examples expect a compatible Ollama model to be installed locally. The model name used in the scripts can be changed to match your local installation.
 
+### OpenRAG Bench — actual local FAISS integration
+
+The original six-snippet local FAISS retriever is now also exercised through
+**OpenRAG Bench v0.6.0** (the separately published MIT open-source project).
+The evaluator captures real Sentence Transformers + FAISS rankings with stable
+chunk IDs for two cosine-score thresholds, runs the Guard policy, and creates a
+standalone HTML report. **Ollama and Gemini are not needed** for this retrieval
+evaluation.
+
+~~~bash
+python -m pip install "sentence-transformers==5.1.1" "transformers==4.57.1" "faiss-cpu==1.12.0"
+python -m pip install https://github.com/ilker-Akbal/openrag-bench/releases/download/v0.6.0/openrag_bench-0.6.0-py3-none-any.whl
+python practice/llm/local-rag/openrag_bench_eval.py --output-dir reports/openrag-faiss-first
+~~~
+
+The first run downloads the public embedding model. The test uses a **tiny
+author-labeled synthetic corpus** and represents **first-party integration
+only**, not independent adoption or real-manual quality evidence. Complete
+instructions and CI verification:
+[OpenRAG Bench integration](docs/OPENRAG_BENCH_INTEGRATION.md).
+
 ## YOLO Practice
 
 Install:
