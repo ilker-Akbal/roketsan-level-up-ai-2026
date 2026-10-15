@@ -1,0 +1,50 @@
+[
+  {
+    "query_id": "q-radar",
+    "question": "Which system detects things flying in the sky?",
+    "category": "sensors",
+    "critical": false,
+    "relevant_ids": ["chunk_01"],
+    "retrieved_ids": []
+  },
+  {
+    "query_id": "q-battery",
+    "question": "What DC voltage does the battery supply?",
+    "category": "power",
+    "critical": false,
+    "relevant_ids": ["chunk_02"],
+    "retrieved_ids": []
+  },
+  {
+    "query_id": "q-location",
+    "question": "What provides the vehicle's location?",
+    "category": "navigation",
+    "critical": true,
+    "relevant_ids": ["chunk_03"],
+    "retrieved_ids": []
+  },
+  {
+    "query_id": "q-camera",
+    "question": "How are walking people detected?",
+    "category": "sensors",
+    "critical": false,
+    "relevant_ids": ["chunk_04"],
+    "retrieved_ids": []
+  },
+  {
+    "query_id": "q-imu",
+    "question": "What sensor tracks acceleration and angular speed?",
+    "category": "navigation",
+    "critical": false,
+    "relevant_ids": ["chunk_05"],
+    "retrieved_ids": []
+  },
+  {
+    "query_id": "q-ethernet",
+    "question": "Which interface sends telemetry information?",
+    "category": "communications",
+    "critical": false,
+    "relevant_ids": ["chunk_06"],
+    "retrieved_ids": []
+  }
+]
